@@ -8,8 +8,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     constructor() {
         super(
             {
-                clientID: "260963011791-ud38rrll76835kd69c8pbnqkf7l82g1j.apps.googleusercontent.com",
-                clientSecret: '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',
+                clientID: process.env.CLIENT_AUTH_GOOGLE_ID,
+                clientSecret: process.env.CLIENT_AUTH_GOOGLE_SECRET,
                 callbackURL: 'https://tinamys.com:3000/auth/google/redirect',
                 scope: ['profile', 'email'],
             }
@@ -27,7 +27,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
             image: profile?._json.picture,
             email: profile?._json.email,
             provider: profile?.provider,
-            role:'user'
+            role: 'user'
         }
 
         return user || null;
