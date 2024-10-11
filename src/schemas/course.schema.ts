@@ -34,6 +34,9 @@ export class Course extends Document {
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }], required: true })
     lessons: Array<ObjectId>;
+
+    @Prop({ required: true })
+    document: string;
 }
 
 export const COURSE_MODEL = Course.name;
