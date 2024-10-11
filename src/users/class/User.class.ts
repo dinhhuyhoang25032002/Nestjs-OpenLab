@@ -1,5 +1,5 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class UserClass {
     @IsNotEmpty()
@@ -27,8 +27,10 @@ export class UserClass {
     @IsString()
     readonly dateOfBirth: string;
 
-    // @IsOptional()
-    // @IsString()
+    @IsOptional()
+    @IsArray()
+    readonly courses: Array<Object>;
+
     // readonly role?: string;
 }
 

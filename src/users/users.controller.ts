@@ -1,15 +1,15 @@
 
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Patch, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, HttpStatus, Post, Put, Req, Res, UseGuards, HttpCode } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUser, UserClass } from '@users/class/User.class';
 import { User } from '@schemas/users.schema';
 // import { JwtAccessAuthGuard } from 'src/auth/guard/accessToken.guard'
-import { Request } from 'express';
-import { AuthGuard } from '@nestjs/passport';
+import { Request, Response } from 'express';
+//import { AuthGuard } from '@nestjs/passport';
 @Controller('users')
 
-@UseGuards(AuthGuard('jwt'))
+//@UseGuards(AuthGuard('jwt'))
 export class UsersController {
     constructor(private readonly userService: UsersService) { }
 
@@ -23,6 +23,12 @@ export class UsersController {
     @Get(':id')
     findOneUser(@Param('id') id: string): Promise<User | null> {
         return this.userService.findOneUser(id);
+    }
+
+    @Patch('buy-course')
+    @HttpCode(HttpStatus.OK)
+    async buyACourse(@Body() info: { userId: string, courseId: string }, @Res() res: Response) {
+        return this.userService.handleBuyACourse(info, res)
     }
 
     //PATCH /users/:id 
@@ -41,4 +47,6 @@ export class UsersController {
     async deleteOneUser(@Param('id') id: string) {
         return this.userService.deleteOneUser(id);
     }
+
+
 }

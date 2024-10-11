@@ -19,33 +19,36 @@
 // export default UserChema;
 
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose"
+import mongoose, { Document, ObjectId } from "mongoose"
 @Schema({ timestamps: true })
 export class User extends Document {
 
     @Prop({ required: true, unique: true })
     email: string;
 
-    @Prop({ require: true, select: false })
+    @Prop({ required: true, select: false })
     password: string;
 
-    @Prop({ require: true })
+    @Prop({ required: true })
     fullname: string;
 
-    @Prop({ require: false })
+    @Prop({ required: false })
     address: string;
 
-    @Prop({ require: false })
+    @Prop({ required: false })
     image?: string;
 
-    @Prop({ require: false })
+    @Prop({ required: false })
     dateOfBirth: string;
 
-    @Prop({ require: false })
+    @Prop({ required: false })
     provider: string;
-    
+
     @Prop({ required: true })
     role: string;
+
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }] })
+    courses: Array<ObjectId>;
 }
 
 export const USER_MODEL = User.name;

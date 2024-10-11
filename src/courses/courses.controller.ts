@@ -35,6 +35,7 @@ export class CoursesController {
     //POST /courses
     @Post()
     async create(@Body() Course: CourseClass) {
+      //  console.log('check course needed create', Course);
         return this.courseService.createOneCourse(Course);
     }
 

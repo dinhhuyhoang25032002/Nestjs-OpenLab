@@ -64,7 +64,7 @@ export class AuthService {
 
     async handleLogin(user: UpdateUser, res: Response) {
         try {
-         //  console.log('check user:', user);
+            //  console.log('check user:', user);
             let User = await this.userModel.findOne({ email: user.email }).select('+password').exec();
 
             if (!User) {
@@ -74,7 +74,7 @@ export class AuthService {
             }
 
             //Validate password
-            let checkPassword = await compareData(`${user.password}`, User.password);
+            let checkPassword = await compareData(user.password as string, User.password);
             if (!checkPassword) {
                 throw new ForbiddenException("Access Denied");
             }
@@ -84,12 +84,12 @@ export class AuthService {
 
             const tokens = await getToken(User._id, User.email);
 
-            res.cookie('token', tokens.refresh_token,
+            res.cookie('token', tokens.refreshToken,
                 { httpOnly: true, secure: true, sameSite: "none", expires: new Date(Date.now() + 604800000), partitioned: true });
 
             return res.send({
                 ...userObject,
-                access_token: tokens.access_token,
+                access_token: tokens.accessToken,
             });
         } catch (e) {
             throw new Error(e);
@@ -105,10 +105,10 @@ export class AuthService {
     async refreshToken(user: JwtPayload, res: Response) {
         const { sub, email } = user;
         const tokens = await getToken(sub, email);
-        res.cookie('token', tokens.refresh_token,
+        res.cookie('token', tokens.refreshToken,
             { httpOnly: true, secure: true, sameSite: "none", expires: new Date(Date.now() + 604800000), partitioned: true });
         return res.send({
-            access_token: tokens.access_token,
+            access_token: tokens.accessToken,
         });
     }
 }

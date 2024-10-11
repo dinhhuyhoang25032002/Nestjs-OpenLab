@@ -18,11 +18,8 @@ export class AuthController {
     }
 
     @Post('login')
-    @HttpCode(HttpStatus.OK)
-        
+    @HttpCode(HttpStatus.OK) 
     async login(@Body() user: UpdateUser, @Res() res: Response,) {
-     
-        
          return this.authService.handleLogin(user, res);
     }
     

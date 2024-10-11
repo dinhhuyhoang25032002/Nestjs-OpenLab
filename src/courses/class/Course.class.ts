@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { PartialType } from '@nestjs/mapped-types'
 export class CourseClass {
 
@@ -17,6 +17,27 @@ export class CourseClass {
     @IsNotEmpty()
     @IsString()
     readonly image: string;
+
+    @IsOptional()
+    @IsString()
+    readonly type: string;
+
+    @IsNotEmpty()
+    @IsString()
+    readonly subType: string;
+
+    @IsArray()
+    @IsOptional()
+    users: Array<Object>
+
+    @IsOptional()
+    @IsString()
+    readonly startNumber?: string
+
+    @IsArray()
+    //  @IsNotEmpty()
+    @IsOptional()
+    readonly lessons: Array<Object>
 }
 
 export class UpdateCourse extends PartialType(CourseClass) { }

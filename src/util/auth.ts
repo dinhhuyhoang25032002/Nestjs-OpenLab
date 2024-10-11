@@ -1,7 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 type token = {
-    access_token: string,
-    refresh_token: string
+    accessToken: string,
+    refreshToken: string
 };
 
 const jwtService = new JwtService();
@@ -15,7 +15,7 @@ export const getToken = async (userId: string, email: string): Promise<token> =>
             },
             {
                 secret: process.env.SECRET_KEY,
-                expiresIn: 60*2
+                expiresIn: 60 * 2
             }
         ),
         jwtService.signAsync(
@@ -30,7 +30,6 @@ export const getToken = async (userId: string, email: string): Promise<token> =>
         )
     ]);
     return {
-        access_token: accessToken,
-        refresh_token: refreshToken
+        accessToken, refreshToken
     }
 }

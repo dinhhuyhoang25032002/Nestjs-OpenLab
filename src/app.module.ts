@@ -12,6 +12,9 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { LessonsModule } from './lessons/lessons.module';
+import { HistoriesModule } from './histories/histories.module';
+import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
 @Global()
 @Module({
   imports: [
@@ -50,6 +53,9 @@ import { JwtModule } from '@nestjs/jwt';
         }
       }
     ),
+    LessonsModule,
+    HistoriesModule,
+    ShoppingCartsModule,
   ],
   controllers: [AppController],
   providers: [

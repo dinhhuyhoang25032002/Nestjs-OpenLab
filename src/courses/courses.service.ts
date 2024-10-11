@@ -11,8 +11,13 @@ export class CoursesService {
         @InjectModel(COURSE_MODEL)
         private readonly courseModel: SoftDeleteModel<Course> & Model<Course>
     ) { }
+
     async createOneCourse(Course: CourseClass): Promise<Course> {
-        const createdCourse = new this.courseModel(Course);
+        const newCourse = {
+            ...Course,
+            type: "COURSE"
+        }
+        const createdCourse = new this.courseModel(newCourse);
         return createdCourse.save();
     }
 
