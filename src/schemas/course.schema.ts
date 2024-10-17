@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { Document, ObjectId } from "mongoose";
 
-
 @Schema({ timestamps: true })
 export class Course extends Document {
 
@@ -27,7 +26,7 @@ export class Course extends Document {
     subType: string;
 
     @Prop()
-    startNumber: string;
+    starNumber: string;
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] })
     users?: Array<ObjectId>;
@@ -35,8 +34,8 @@ export class Course extends Document {
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }], required: true })
     lessons: Array<ObjectId>;
 
-    @Prop({ required: true })
-    document: string;
+    @Prop({ required: false })
+    references: string;
 }
 
 export const COURSE_MODEL = Course.name;

@@ -15,7 +15,7 @@ export class UsersController {
 
     //GET /users
     @Get()
-    findAll(@Req() req: Request) {
+    findAll() {
         return this.userService.findAllUsers();
     }
 

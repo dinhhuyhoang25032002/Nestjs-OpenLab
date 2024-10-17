@@ -7,35 +7,39 @@ export class CoursesController {
 
     constructor(private readonly courseService: CoursesService) { }
 
-    //GET /courses
-    @Get()
-    findAll(): Promise<Course[]> {
-        return this.courseService.findAllCourses();
-    }
-
     //GET /courses/search/?name || ? price
     @Get('search')
     findCourseByName(@Query('name') name?: string, @Query('price') price?: string) {
-        return this.courseService.GetCoursesBySearch(name, price);
+        return this.courseService.getCoursesBySearch(name, price);
     }
-
+    //GET /courses/active/
+    @Post('active')
+    findAllCourseActive(@Body() body: { userId: string, courseId?: Array<string> }) {
+        return this.courseService.getAllCourseActive(body)
+    }
     //GET /course/get-name
     @Get('get-name')
     getNameCourses(@Query('name') name: string) {
-        return this.courseService.GetNameCourse(name);
+        return this.courseService.getCourseByName(name);
     }
-
 
     //GET /courses/:id
     @Get(':id')
-    findOneCourse(@Param('id') id: string): Promise<Course | null> {
+    findOneCourse(@Param('id') id: string) {
+        return this.courseService.findOneCourse(id);
+    }
+
+    //GET /courses?id
+    @Get()
+    findAll(@Query('id') id: string) {
+        console.log(id);
         return this.courseService.findOneCourse(id);
     }
 
     //POST /courses
     @Post()
     async create(@Body() Course: CourseClass) {
-      //  console.log('check course needed create', Course);
+        //  console.log('check course needed create', Course);
         return this.courseService.createOneCourse(Course);
     }
 

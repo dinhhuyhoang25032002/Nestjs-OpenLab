@@ -32,7 +32,7 @@ export class CourseClass {
 
     @IsOptional()
     @IsString()
-    readonly startNumber?: string
+    readonly starNumber?: string
 
     @IsArray()
     //  @IsNotEmpty()

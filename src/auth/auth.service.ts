@@ -89,7 +89,7 @@ export class AuthService {
 
             return res.send({
                 ...userObject,
-                access_token: tokens.accessToken,
+                accessToken: tokens.accessToken,
             });
         } catch (e) {
             throw new Error(e);
@@ -108,7 +108,7 @@ export class AuthService {
         res.cookie('token', tokens.refreshToken,
             { httpOnly: true, secure: true, sameSite: "none", expires: new Date(Date.now() + 604800000), partitioned: true });
         return res.send({
-            access_token: tokens.accessToken,
+            accessToken: tokens.accessToken,
         });
     }
 }
