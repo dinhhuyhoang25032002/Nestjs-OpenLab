@@ -1,9 +1,6 @@
-
     {
       "name": "Tìm hiểu về kít wifi ESP 8266",
       "linkVideo": "https://www.youtube.com/watch?v=ATTAVxKyc6M&t=372s",
-      "linkImage":
-        "https://raw.githubusercontent.com/tranhung26092002/OpenLAB-Web-FE/refs/heads/dev-fe-next/src/assets/image/product/course/ai-ml/dd05cff47e48d9168059%20(1).jpg",
       "indexItem": [
         { "nameItem": "Cấu tạo của một thiết bị IoT" },
         { "nameItem": "Tại sao phải học lập trình ESP8266?" },
@@ -187,6 +184,10 @@
               ]
             }
           ]
+        },
+        {
+           "dataVideo":
+        "https://raw.githubusercontent.com/tranhung26092002/OpenLAB-Web-FE/refs/heads/dev-fe-next/src/assets/image/product/course/ai-ml/dd05cff47e48d9168059%20(1).jpg"
         }
       ]
     }

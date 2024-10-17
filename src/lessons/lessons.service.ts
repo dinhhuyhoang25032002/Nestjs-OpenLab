@@ -13,17 +13,18 @@ export class LessonsService {
     private readonly lessonModel: SoftDeleteModel<Lesson> & Model<Lesson>,
     @InjectModel(COURSE_MODEL)
     private readonly courseModel: SoftDeleteModel<Course> & Model<Course>,
-  ) { }
+  ) {}
 
   async handleCreateLesson(contentLesson: LessonClass) {
     const { course } = contentLesson;
+    console.log(course);
 
     const courseData = await this.courseModel.findById(course);
     if (!courseData) {
       return { message: 'Không tồn tại khóa học để thêm.' };
     }
 
-    console.log("check lesson content:", contentLesson);
+    console.log('check lesson content:', contentLesson);
 
     const lessonCreated = await new this.lessonModel(contentLesson).save();
     const listLessons = (courseData as CourseClass).lessons;
@@ -36,6 +37,6 @@ export class LessonsService {
   }
 
   async handleGetLessonById(id: string) {
-    return this.lessonModel.findById(id)
+    return this.lessonModel.findById(id);
   }
 }

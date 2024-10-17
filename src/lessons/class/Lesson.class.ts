@@ -9,10 +9,6 @@ export class LessonClass {
 
   @IsNotEmpty()
   @IsString()
-  readonly linkVideo: string;
-
-  @IsNotEmpty()
-  @IsString()
   readonly linkImage: string;
 
   @IsNotEmpty()

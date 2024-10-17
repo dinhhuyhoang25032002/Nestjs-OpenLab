@@ -17,23 +17,36 @@ type tabType = {
 export type Item = {
   nameItem: string;
 };
+export type dataListProps = {
+  header?: string;
+  data?: Array<string>;
+};
+type dataContentMerge = {
+  label: string;
+  description: dataContentNote[];
+};
+export type dataMergeProps = {
+  header?: string;
+  data?: dataContentMerge[];
+  image?: string;
+};
 export class ContentLesson {
   dataSlides?: dataSlideType[];
   contentText?: Array<string>;
   dataPlus?: dataContentNote[];
+  dataMerge?: dataMergeProps;
   title?: Array<string>;
   dataVideo?: string;
   dataImage?: string;
-  dataTab?:tabType[]
+  dataTab?: tabType[];
+  dataList?: dataListProps;
+  dataList2?: dataListProps;
 }
 
 @Schema({ timestamps: true })
 export class Lesson extends Document {
   @Prop({ required: true })
   name: string;
-
-  @Prop({ required: true })
-  linkVideo: string;
 
   @Prop({ required: true })
   linkImage: string;
