@@ -15,6 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { LessonsModule } from './lessons/lessons.module';
 import { HistoriesModule } from './histories/histories.module';
 import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
+import { PaymentsModule } from './payments/payments.module';
 @Global()
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
     LessonsModule,
     HistoriesModule,
     ShoppingCartsModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [

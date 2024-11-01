@@ -7,7 +7,7 @@ type dataSlideType = {
 };
 type dataContentNote = {
   title: string;
-  description: string;
+  description?: string;
 };
 type tabType = {
   title: string;
@@ -21,10 +21,12 @@ export type dataListProps = {
   header?: string;
   data?: Array<string>;
 };
+
 type dataContentMerge = {
   label: string;
   description: dataContentNote[];
 };
+
 export type dataMergeProps = {
   header?: string;
   data?: dataContentMerge[];
