@@ -23,10 +23,10 @@ export class CoursesController {
         return this.courseService.getCourseByName(name);
     }
 
-    //GET /courses/:id
-    @Get(':id')
-    findOneCourse(@Param('id') id: string) {
-        return this.courseService.findOneCourse(id);
+    //GET /courses/:slug
+    @Get(':slug')
+    findOneCourse(@Param('slug') slug: string) {
+        return this.courseService.findOneCourse(slug);
     }
 
     //GET /courses?id

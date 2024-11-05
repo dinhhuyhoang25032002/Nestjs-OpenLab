@@ -6,7 +6,7 @@ import { CourseClass, UpdateCourse } from './class/Course.class';
 import { SoftDeleteModel } from 'mongoose-delete';
 import { User, USER_MODEL } from '@schemas/users.schema';
 import { compareArrays } from '@util/compareArrays';
-
+import slugify from 'slugify';
 @Injectable()
 export class CoursesService {
     constructor(
@@ -17,9 +17,12 @@ export class CoursesService {
     ) { }
 
     async createOneCourse(Course: CourseClass): Promise<Course> {
+        const { name } = Course
+
         const newCourse = {
             ...Course,
-            type: "COURSE"
+            type: "COURSE",
+            slug: slugify(name, { lower: true, locale: "vi" })
         }
         const createdCourse = new this.courseModel(newCourse);
         return createdCourse.save();
@@ -29,8 +32,8 @@ export class CoursesService {
         return this.courseModel.find().exec();
     }
 
-    async findOneCourse(id: string) {
-        return this.courseModel.findById(id).populate({ path: 'lessons', select: 'name _id' });
+    async findOneCourse(slug: string) {
+        return this.courseModel.findOne({ slug: slug }).populate({ path: 'lessons', select: 'name _id' });
     }
 
     async getCourseByName(name: string) {

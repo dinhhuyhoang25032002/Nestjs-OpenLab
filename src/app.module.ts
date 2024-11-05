@@ -45,6 +45,7 @@ import { PaymentsModule } from './payments/payments.module';
           {
             connection && console.log("Connect Database successfully");
           }
+        
           connection.plugin(MongooseDelete,
             {
               deletedBy: true, deletedByType: String, deletedAt: true,

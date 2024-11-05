@@ -1,10 +1,15 @@
 import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { PartialType } from '@nestjs/mapped-types'
+import { dataBenefit } from "@schemas/course.schema";
 export class CourseClass {
 
     @IsNotEmpty()
     @IsString()
     readonly name: string;
+
+    @IsOptional()
+    @IsString()
+    readonly benefit: Array<dataBenefit>;
 
     @IsNotEmpty()
     @IsString()
@@ -17,6 +22,10 @@ export class CourseClass {
     @IsNotEmpty()
     @IsString()
     readonly image: string;
+
+    @IsNotEmpty()
+    @IsString()
+    readonly video: string;
 
     @IsOptional()
     @IsString()

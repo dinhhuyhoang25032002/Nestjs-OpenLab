@@ -5,7 +5,7 @@ import { UsersService } from './users.service';
 import { UpdateUser, UserClass } from '@users/class/User.class';
 import { User } from '@schemas/users.schema';
 // import { JwtAccessAuthGuard } from 'src/auth/guard/accessToken.guard'
-import { Request, Response } from 'express';
+
 //import { AuthGuard } from '@nestjs/passport';
 @Controller('users')
 
@@ -25,12 +25,6 @@ export class UsersController {
         return this.userService.findOneUser(id);
     }
 
-    @Patch('buy-course')
-    @HttpCode(HttpStatus.OK)
-    async buyACourse(@Body() info: { userId: string, courseId: string }, @Res() res: Response) {
-        return this.userService.handleBuyACourse(info, res)
-    }
-
     //PATCH /users/:id 
     @Patch(':id')
     async updateInforUser(@Param('id') id: string, @Body() user: UpdateUser) {
@@ -47,6 +41,4 @@ export class UsersController {
     async deleteOneUser(@Param('id') id: string) {
         return this.userService.deleteOneUser(id);
     }
-
-
 }
