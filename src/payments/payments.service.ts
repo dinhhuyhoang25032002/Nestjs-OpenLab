@@ -9,7 +9,7 @@ import { UserClass } from '@users/class/User.class';
 import { Model } from 'mongoose';
 import { SoftDeleteModel } from 'mongoose-delete';
 import { User, USER_MODEL } from '@schemas/users.schema';
-import PayOS from '@payos/node';
+// import  PayOS from '@payos/node';
 type requestBodyForCreateLink = {
   orderCode: number;
   amount: number;
@@ -182,15 +182,17 @@ export class PaymentsService {
   }
 
   async handleGetLinkForPayment(res: Response) {
+    const PayOS = require("@payos/node");
     const payos = new PayOS(
       'cbef30a1-36c0-4062-926c-94a2ff798465',
       '99520a1a-5c9c-4d44-aa54-4bae11d27767',
       '7169882514c4a20b4c593fa0143fcc69c5ffab0400cdf0270104c3dbac9acbf3',
     );
     const requestData: requestBodyForCreateLink = {
-      orderCode: 10,
-      amount: 10000,
-      description: 'Khóa học thực hành mạng di động 5g',
+      orderCode: 12,
+      amount: 5000,
+
+      description: 'Thanh toán khóa học',
       cancelUrl: 'https://openlab.com.vn/',
       returnUrl: 'https://openlab.com.vn/',
     };
