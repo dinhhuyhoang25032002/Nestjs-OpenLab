@@ -16,9 +16,11 @@ import { LessonsModule } from './lessons/lessons.module';
 import { HistoriesModule } from './histories/histories.module';
 import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
 import { PaymentsModule } from './payments/payments.module';
+
 @Global()
 @Module({
   imports: [
+
     UsersModule, CoursesModule, AuthModule,
     ThrottlerModule.forRoot([
       {
@@ -36,6 +38,7 @@ import { PaymentsModule } from './payments/payments.module';
     ConfigModule.forRoot(
       {
         isGlobal: true,
+        expandVariables: true,
         envFilePath: '.env.development.local'
       }
     ),
@@ -45,7 +48,7 @@ import { PaymentsModule } from './payments/payments.module';
           {
             connection && console.log("Connect Database successfully");
           }
-        
+
           connection.plugin(MongooseDelete,
             {
               deletedBy: true, deletedByType: String, deletedAt: true,

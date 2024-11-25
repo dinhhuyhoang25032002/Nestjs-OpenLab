@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 import { Body, Controller, Delete, Get, Param, Patch, HttpStatus, Post, Put, Req, Res, UseGuards, HttpCode } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UpdateUser, UserClass } from '@users/class/User.class';
+import { PartialUser, UserClass } from '@users/class/User.class';
 import { User } from '@schemas/users.schema';
 // import { JwtAccessAuthGuard } from 'src/auth/guard/accessToken.guard'
 
@@ -27,7 +27,7 @@ export class UsersController {
 
     //PATCH /users/:id 
     @Patch(':id')
-    async updateInforUser(@Param('id') id: string, @Body() user: UpdateUser) {
+    async updateInforUser(@Param('id') id: string, @Body() user: PartialUser) {
         return this.userService.updateInFoOneUser(id, user);
     }
 

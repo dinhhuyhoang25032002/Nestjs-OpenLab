@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Delete, Query, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Delete, Query, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { Course } from '@schemas/course.schema';
 import { CourseClass, UpdateCourse } from './class/Course.class';
@@ -12,7 +12,8 @@ export class CoursesController {
     findCourseByName(@Query('name') name?: string, @Query('price') price?: string) {
         return this.courseService.getCoursesBySearch(name, price);
     }
-    //GET /courses/active/
+    //POST /courses/active/
+    @HttpCode(HttpStatus.OK)
     @Post('active')
     findAllCourseActive(@Body() body: { userId: string, courseId?: Array<string> }) {
         return this.courseService.getAllCourseActive(body)
@@ -26,6 +27,8 @@ export class CoursesController {
     //GET /courses/:slug
     @Get(':slug')
     findOneCourse(@Param('slug') slug: string) {
+        console.log(slug);
+
         return this.courseService.findOneCourse(slug);
     }
 

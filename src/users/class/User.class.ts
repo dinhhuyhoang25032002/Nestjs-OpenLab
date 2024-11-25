@@ -31,7 +31,10 @@ export class UserClass {
     @IsArray()
     readonly courses: Array<Object>;
 
+    @IsOptional()
+    @IsString()
+    readonly providers?: string;
     // readonly role?: string;
 }
 
-export class UpdateUser extends PartialType(UserClass) { }
+export class PartialUser extends PartialType(UserClass) { }

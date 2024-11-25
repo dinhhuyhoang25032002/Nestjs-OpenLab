@@ -7,13 +7,16 @@ import { SoftDeleteModel } from 'mongoose-delete';
 import { User, USER_MODEL } from '@schemas/users.schema';
 import { compareArrays } from '@util/compareArrays';
 import slugify from 'slugify';
+import { LESSON_MODEL, Lesson } from '@schemas/lesson.schema';
 @Injectable()
 export class CoursesService {
     constructor(
         @InjectModel(COURSE_MODEL)
         private readonly courseModel: SoftDeleteModel<Course> & Model<Course>,
         @InjectModel(USER_MODEL)
-        private readonly userModel: SoftDeleteModel<User> & Model<User>
+        private readonly userModel: SoftDeleteModel<User> & Model<User>,
+        @InjectModel(LESSON_MODEL)
+        private readonly lessonModel: SoftDeleteModel<Lesson> & Model<Lesson>
     ) { }
 
     async createOneCourse(Course: CourseClass): Promise<Course> {
@@ -33,7 +36,7 @@ export class CoursesService {
     }
 
     async findOneCourse(slug: string) {
-        return this.courseModel.findOne({ slug: slug }).populate({ path: 'lessons', select: 'name _id' });
+        return this.courseModel.findOne({ slug: slug }).select('-users').populate({ path: 'lessons', select: 'name _id linkImage' });
     }
 
     async getCourseByName(name: string) {
@@ -113,7 +116,7 @@ export class CoursesService {
             }
             const listCourses = await this.courseModel.find({
                 '_id': { $in: coursesData }
-            }).select('name starNumber type image subType')
+            }).select('name starNumber type image subType lessons')
 
             return {
                 message: 'Lấy dữ liệu thành công!',

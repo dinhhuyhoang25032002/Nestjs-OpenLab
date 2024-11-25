@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { User } from '@schemas/users.schema';
-import { UpdateUser, UserClass } from './class/User.class';
+import { PartialUser, UserClass } from './class/User.class';
 import { USER_MODEL } from '@schemas/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { SoftDeleteModel } from 'mongoose-delete';
@@ -22,7 +22,7 @@ export class UsersService {
         return this.userModel.findById(id).exec();
     }
 
-    async updateInFoOneUser(id: string, User: UpdateUser): Promise<string> {
+    async updateInFoOneUser(id: string, User: PartialUser): Promise<string> {
         return this.userModel.findOneAndUpdate({ _id: id }, User, { strict: true }).exec()
             .then(() => ('Update User Info Successfully!'))
             .catch((e) => {

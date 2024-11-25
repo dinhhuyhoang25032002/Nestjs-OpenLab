@@ -8,12 +8,13 @@ import {
   Res,
   Req,
   Get,
+  Query,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 @Controller('payments')
 export class PaymentsController {
-  constructor(private readonly paymentService: PaymentsService) {}
+  constructor(private readonly paymentService: PaymentsService) { }
 
   @Patch('buy-course')
   @HttpCode(HttpStatus.OK)
@@ -35,10 +36,10 @@ export class PaymentsController {
   }
 
   @Get('get-link')
-  async handleGetLinkForPayment(@Res() res: Response) {
-    console.log('asdasd');
-    
-    return this.paymentService.handleGetLinkForPayment(res);
+  @HttpCode(HttpStatus.CREATED)
+  async handleGetLinkForPayment(@Query() query: { userId: string, courseId: string }) {
+    return this.paymentService.handleGetLinkForPayment(query);
+
   }
 
   @Post()

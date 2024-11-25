@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Course, COURSE_MODEL } from '@schemas/course.schema';
 import { Response } from 'express';
 import { CourseClass } from 'src/courses/class/Course.class';
@@ -33,7 +33,7 @@ export class PaymentsService {
     private readonly historyModel: Model<History> & SoftDeleteModel<History>,
     @InjectModel(USER_MODEL)
     private readonly userModel: Model<User> & SoftDeleteModel<User>,
-  ) {}
+  ) { }
 
   async handlePayment() {
     //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
@@ -181,24 +181,46 @@ export class PaymentsService {
     });
   }
 
-  async handleGetLinkForPayment(res: Response) {
+  async handleGetLinkForPayment(query: { userId: string, courseId: string }) {
+    const { userId, courseId } = query
+
     const PayOS = require("@payos/node");
     const payos = new PayOS(
       'cbef30a1-36c0-4062-926c-94a2ff798465',
       '99520a1a-5c9c-4d44-aa54-4bae11d27767',
       '7169882514c4a20b4c593fa0143fcc69c5ffab0400cdf0270104c3dbac9acbf3',
     );
+    const user = await this.userModel.findById(userId);
+    const course = await this.courseModel.findById(courseId);
+    if (!user) {
+      throw new BadRequestException('User not exis');
+    }
+    if (!course) {
+      throw new BadRequestException('Course not exis');
+    }
+    const { email, fullname } = user
+    const { name, price } = course
+    const numberPrice = Number(price.replace(/\./g, ""));
+    const date = Math.floor(Date.now() / 1000 + 5 * 60);
     const requestData: requestBodyForCreateLink = {
-      orderCode: 12,
-      amount: 5000,
-
+      orderCode: Math.floor(Math.random() * 10000) + 1,
+      amount: numberPrice,
+      buyerName: fullname,
+      buyerEmail: email,
       description: 'Thanh toán khóa học',
+      items: [{
+        name: name,
+        quantity: 1,
+        price: numberPrice,
+      }],
+      expiredAt: date,
+      returnUrl: 'https://openlab.com.vn/products/courses/search-course',
       cancelUrl: 'https://openlab.com.vn/',
-      returnUrl: 'https://openlab.com.vn/',
     };
-    const responsetData = await payos.createPaymentLink(requestData);
-    return res.status(200).json({
-      responsetData: responsetData,
-    });
+    // const cancelPaymentLink = await payos.cancelPaymentLink(12);
+    const createPaymentLink = await payos.createPaymentLink(requestData);
+    return {
+      responseData: createPaymentLink,
+    };
   }
 }

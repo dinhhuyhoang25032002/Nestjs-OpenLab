@@ -1,13 +1,14 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { USER_MODEL } from '@schemas/users.schema';
-import { UpdateUser, UserClass } from '@users/class/User.class';
+import { PartialUser, UserClass } from '@users/class/User.class';
 import { Model } from 'mongoose';
 import { User } from '@schemas/users.schema';
 import { hardData, compareData } from 'src/util/bcrypt';
 import { Response } from 'express';
 import { getToken } from '@util/auth';
 import { JwtPayload } from './strategy/accessToken.strategy';
+import { userFromGoogle } from 'src/types/CustomType';
 @Injectable()
 export class AuthService {
     constructor(
@@ -32,46 +33,50 @@ export class AuthService {
         return newUser;
     }
 
-    async createOneUser(User: UserClass) {
-        const userExist = await this.userModel.findOne({ email: User.email })
-        if (userExist) {
-            throw new BadRequestException('Email already exists');
+    async createOneUser(user: PartialUser) {
+        let { email, password } = user
+        if (!email || !password) {
+            throw new BadRequestException('Email or Password not empty');
         }
-
-        let password = await hardData(User.password);
-        User.password = password;
-
-        const UserSave = {
-            ...User,
-            role: 'user',
+        const userExist = await this.userModel.findOne({ email: email })
+        if (!userExist) {
+            let passwordhard = await hardData(password);
+            password = passwordhard;
+            const UserSave = {
+                ...user,
+                role: 'user',
+            }
+            await new this.userModel(UserSave).save({ validateBeforeSave: true })
+                .catch((e) => {
+                    throw new Error(e);
+                });
+            return { message: 'User created succefully' };
         }
-
-        await new this.userModel(UserSave).save({ validateBeforeSave: true })
-            .catch((e) => {
-                throw new Error(e);
-            });
-
-        // const tokens = await getToken(userDb._id, userDb.email);
-        // await this.updateRtHash(userDb._id, tokens.refresh_token);
-
-        return { message: 'User created succefully' };
+        throw new BadRequestException('Email already exists');
     }
 
-    async updateRtHash(userId: string, rt: string) {
-        const hardRt = await hardData(rt);
-        await this.userModel.updateOne({ _id: userId }, { refresh_token: hardRt }, { strict: true })
-    }
+    // async updateRtHash(userId: string, rt: string) {
+    //     const hardRt = await hardData(rt);
+    //     await this.userModel.updateOne({ _id: userId }, { refresh_token: hardRt }, { strict: true })
+    // }
 
-    async handleLogin(user: UpdateUser, res: Response) {
+    async handleLogin(user: PartialUser, res: Response) {
         try {
-            //  console.log('check user:', user);
-            let User = await this.userModel.findOne({ email: user.email }).select('+password').exec();
+            console.log('check user:', user);
+            const { email, password } = user
+            let User = await this.userModel.findOne({ email: email }).select('+password').exec();
 
             if (!User) {
                 return res.send(
                     { errmessage: new BadRequestException('Wrong credentials') }
                 )
             }
+            if (!User.password && User.provider !== null) {
+                return res.send(
+                    { errmessage: new BadRequestException('user is exised') }
+                )
+            }
+            console.log(User);
 
             //Validate password
             let checkPassword = await compareData(user.password as string, User.password);
@@ -82,28 +87,42 @@ export class AuthService {
             const userObject = User.toObject();
             delete userObject.password;
 
-            const tokens = await getToken(User._id, User.email);
+            const { accessToken, refreshToken } = await getToken(User._id, User.email);
 
-            res.cookie('token', tokens.refreshToken,
+            res.cookie('token', refreshToken,
                 { httpOnly: true, secure: true, sameSite: "none", expires: new Date(Date.now() + 604800000), partitioned: true });
 
             return res.send({
                 ...userObject,
-                accessToken: tokens.accessToken,
+                accessToken: accessToken,
             });
         } catch (e) {
             throw new Error(e);
         }
     }
+    async handleLoginWithGoogle(user: userFromGoogle, res: Response) {
+        try {
+            const { email } = user;
+            let dataUser = await this.userModel.findOne({ email }).exec();
+            if (!dataUser) {
+                dataUser = await this.userModel.create(user);
+            }
+            const { accessToken, refreshToken } = await getToken(dataUser._id, dataUser.email);
+            res.redirect(`http://localhost:3000/auth?token=${accessToken}`)
+
+        } catch (error) {
+            throw new Error('Error processing Google login.');
+        }
+    }
 
     async handleLogout(res: Response) {
-        res.cookie('token', "",
-            { httpOnly: true, secure: true, sameSite: "none", expires: new Date(Date.now()), partitioned: true });
+        res.clearCookie('token',
+            { httpOnly: true, secure: true, sameSite: "none", expires: new Date(Date.now() + 604800000), partitioned: true });
         return res.send({ message: 'Logged out succefully' });
     }
 
-    async refreshToken(user: JwtPayload, res: Response) {
-        const { sub, email } = user;
+    async refreshToken(jwt: JwtPayload, res: Response) {
+        const { sub, email } = jwt;
         const tokens = await getToken(sub, email);
         res.cookie('token', tokens.refreshToken,
             { httpOnly: true, secure: true, sameSite: "none", expires: new Date(Date.now() + 604800000), partitioned: true });
