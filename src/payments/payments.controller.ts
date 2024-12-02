@@ -12,9 +12,10 @@ import {
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { Response } from 'express';
+import { RequestConfirm } from 'src/types/CustomType';
 @Controller('payments')
 export class PaymentsController {
-  constructor(private readonly paymentService: PaymentsService) { }
+  constructor(private readonly paymentService: PaymentsService) {}
 
   @Patch('buy-course')
   @HttpCode(HttpStatus.OK)
@@ -37,14 +38,16 @@ export class PaymentsController {
 
   @Get('get-link')
   @HttpCode(HttpStatus.CREATED)
-  async handleGetLinkForPayment(@Query() query: { userId: string, courseId: string }) {
+  async handleGetLinkForPayment(
+    @Query() query: { userId: string; courseId: string },
+  ) {
     return this.paymentService.handleGetLinkForPayment(query);
-
   }
 
   @Post()
-  async handleConfirmPayment(@Body() info: any, @Res() res: Response) {
+  async handleConfirmPayment(@Body() info: RequestConfirm, @Res() res: Response) {
     console.log(info);
+    await this.paymentService.handleConfirmPayment(info);
     return res.status(200).json({
       success: true,
     });

@@ -14,13 +14,11 @@ const httpsOptions = {
 
 async function bootstrap() {
   //create app and initialization,config CORS
-  const app = await NestFactory.create(AppModule,
-    {
-      httpsOptions,
-      bodyParser: true,
-      cors: ConfixCors,
-    }
-  );
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions,
+    bodyParser: true,
+    cors: ConfixCors,
+  });
   //Midleware
   app.use(
     session({
@@ -28,8 +26,8 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 60 * 60 * 24 * 7
-      }
+        maxAge: 60 * 60 * 24 * 7,
+      },
     }),
   );
   app.use(passport.initialize());
@@ -38,11 +36,11 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   //app.setGlobalPrefix('api/v1')
 
-
   //Run Server
   await app.init();
-  await app.listen(3001);
-  { app && console.log(`Application is running on: https://tinamys.iotest:3001`) }
+  await app.listen(3001, () => {
+    console.log(`Application is running on: https://tinamys.iotest:3001`);
+  });
 }
 
 bootstrap();

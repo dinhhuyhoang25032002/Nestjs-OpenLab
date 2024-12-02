@@ -49,6 +49,9 @@ export class User extends Document {
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }] })
     courses: Array<ObjectId>;
+
+    @Prop({ required: false, unique: true })
+    paymentsLinkId: Array<string>;
 }
 
 export const USER_MODEL = User.name;

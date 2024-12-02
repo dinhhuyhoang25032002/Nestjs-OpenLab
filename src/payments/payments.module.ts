@@ -5,23 +5,30 @@ import { COURSE_MODEL, CourseSchema } from '@schemas/course.schema';
 import { HISTORY_MODEL, HistorySchema } from '@schemas/history.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { USER_MODEL, UserSchema } from '@schemas/users.schema';
+import { PAYMENT_MODEL, PaymentSchema } from '@schemas/payments.schema';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
       {
         name: USER_MODEL,
-        schema: UserSchema
-      }, {
+        schema: UserSchema,
+      },
+      {
+        name: PAYMENT_MODEL,
+        schema: PaymentSchema,
+      },
+      {
         name: COURSE_MODEL,
-        schema: CourseSchema
+        schema: CourseSchema,
       },
       {
         name: HISTORY_MODEL,
-        schema: HistorySchema
+        schema: HistorySchema,
       },
-    ])
+    ]),
   ],
   providers: [PaymentsService],
-  controllers: [PaymentsController]
+  controllers: [PaymentsController],
 })
-export class PaymentsModule { }
+export class PaymentsModule {}

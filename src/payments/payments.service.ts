@@ -9,6 +9,11 @@ import { UserClass } from '@users/class/User.class';
 import { Model } from 'mongoose';
 import { SoftDeleteModel } from 'mongoose-delete';
 import { User, USER_MODEL } from '@schemas/users.schema';
+import {
+  RequestConfirm,
+  ResponseCreateLinkPayment,
+} from 'src/types/CustomType';
+import { PAYMENT_MODEL, Payments } from '@schemas/payments.schema';
 // import  PayOS from '@payos/node';
 type requestBodyForCreateLink = {
   orderCode: number;
@@ -33,7 +38,9 @@ export class PaymentsService {
     private readonly historyModel: Model<History> & SoftDeleteModel<History>,
     @InjectModel(USER_MODEL)
     private readonly userModel: Model<User> & SoftDeleteModel<User>,
-  ) { }
+    @InjectModel(PAYMENT_MODEL)
+    private readonly paymentModel: Model<Payments>,
+  ) {}
 
   async handlePayment() {
     //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
@@ -181,10 +188,10 @@ export class PaymentsService {
     });
   }
 
-  async handleGetLinkForPayment(query: { userId: string, courseId: string }) {
-    const { userId, courseId } = query
+  async handleGetLinkForPayment(query: { userId: string; courseId: string }) {
+    const { userId, courseId } = query;
 
-    const PayOS = require("@payos/node");
+    const PayOS = require('@payos/node');
     const payos = new PayOS(
       'cbef30a1-36c0-4062-926c-94a2ff798465',
       '99520a1a-5c9c-4d44-aa54-4bae11d27767',
@@ -198,9 +205,10 @@ export class PaymentsService {
     if (!course) {
       throw new BadRequestException('Course not exis');
     }
-    const { email, fullname } = user
-    const { name, price } = course
-    const numberPrice = Number(price.replace(/\./g, ""));
+    const { email, fullname, paymentsLinkId } = user;
+
+    const { name, price,_id } = course;
+    const numberPrice = Number(price.replace(/\./g, ''));
     const date = Math.floor(Date.now() / 1000 + 5 * 60);
     const requestData: requestBodyForCreateLink = {
       orderCode: Math.floor(Math.random() * 10000) + 1,
@@ -208,19 +216,54 @@ export class PaymentsService {
       buyerName: fullname,
       buyerEmail: email,
       description: 'Thanh toán khóa học',
-      items: [{
-        name: name,
-        quantity: 1,
-        price: numberPrice,
-      }],
+      items: [
+        {
+          name: name,
+          quantity: 1,
+          price: numberPrice,
+        },
+      ],
       expiredAt: date,
       returnUrl: 'https://openlab.com.vn/products/courses/search-course',
       cancelUrl: 'https://openlab.com.vn/',
     };
-    // const cancelPaymentLink = await payos.cancelPaymentLink(12);
-    const createPaymentLink = await payos.createPaymentLink(requestData);
+
+    const createPaymentLink: ResponseCreateLinkPayment =
+      await payos.createPaymentLink(requestData);
+    console.log(createPaymentLink.paymentLinkId);
+
+    if (createPaymentLink) {
+      const paymentLinkId = createPaymentLink.paymentLinkId;
+      if (paymentLinkId) {
+        const newPayment = {
+          userId: userId,
+          paymentsLinkId: paymentLinkId,
+        };
+        await this.paymentModel.create(newPayment);
+      }
+    }
     return {
       responseData: createPaymentLink,
     };
+  }
+  async handleConfirmPayment(info: RequestConfirm) {
+    const { data, code, success, desc } = info;
+    const { paymentLinkId } = data;
+    if (data && code === '00' && desc === 'success' && success === true) {
+      const paymentData = await this.paymentModel.findOne({
+        paymentsLinkId: paymentLinkId,
+      });
+      const userId = paymentData?.userId;
+      const userData = await this.userModel.findById(userId);
+      const listCourseBought = (userData as UserClass).courses;
+      // if (!listCourseBought.includes(courseId)) {
+      //   listCourseBought.push(courseId);
+      //   await user?.save();
+      // }
+      // user?.delete;
+      // await this.paymentModel.findOneAndDelete({
+      //   paymentsLinkId: paymentLinkId,
+      // });
+    }
   }
 }
