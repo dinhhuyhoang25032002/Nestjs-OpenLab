@@ -44,3 +44,9 @@ export type RequestConfirm = {
   };
   signature: string;
 };
+
+export enum CommodityType {
+  COURSE = 'COURSE',
+  KIT = 'KIT',
+  DEVICE = 'DEVICE'
+}

@@ -15,7 +15,7 @@ import { Response } from 'express';
 import { RequestConfirm } from 'src/types/CustomType';
 @Controller('payments')
 export class PaymentsController {
-  constructor(private readonly paymentService: PaymentsService) {}
+  constructor(private readonly paymentService: PaymentsService) { }
 
   @Patch('buy-course')
   @HttpCode(HttpStatus.OK)
@@ -39,7 +39,7 @@ export class PaymentsController {
   @Get('get-link')
   @HttpCode(HttpStatus.CREATED)
   async handleGetLinkForPayment(
-    @Query() query: { userId: string; courseId: string },
+    @Query() query: { userId: string; courseId: string, type: string },
   ) {
     return this.paymentService.handleGetLinkForPayment(query);
   }

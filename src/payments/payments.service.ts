@@ -11,7 +11,7 @@ import { SoftDeleteModel } from 'mongoose-delete';
 import { User, USER_MODEL } from '@schemas/users.schema';
 import {
   RequestConfirm,
-  ResponseCreateLinkPayment,
+  ResponseCreateLinkPayment, CommodityType
 } from 'src/types/CustomType';
 import { PAYMENT_MODEL, Payments } from '@schemas/payments.schema';
 // import  PayOS from '@payos/node';
@@ -40,7 +40,7 @@ export class PaymentsService {
     private readonly userModel: Model<User> & SoftDeleteModel<User>,
     @InjectModel(PAYMENT_MODEL)
     private readonly paymentModel: Model<Payments>,
-  ) {}
+  ) { }
 
   async handlePayment() {
     //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
@@ -188,8 +188,8 @@ export class PaymentsService {
     });
   }
 
-  async handleGetLinkForPayment(query: { userId: string; courseId: string }) {
-    const { userId, courseId } = query;
+  async handleGetLinkForPayment(query: { userId: string; courseId: string, type: string }) {
+    const { userId, courseId, type } = query;
 
     const PayOS = require('@payos/node');
     const payos = new PayOS(
@@ -205,9 +205,9 @@ export class PaymentsService {
     if (!course) {
       throw new BadRequestException('Course not exis');
     }
-    const { email, fullname, paymentsLinkId } = user;
+    const { email, fullname } = user;
 
-    const { name, price,_id } = course;
+    const { name, price } = course;
     const numberPrice = Number(price.replace(/\./g, ''));
     const date = Math.floor(Date.now() / 1000 + 5 * 60);
     const requestData: requestBodyForCreateLink = {
@@ -238,6 +238,8 @@ export class PaymentsService {
         const newPayment = {
           userId: userId,
           paymentsLinkId: paymentLinkId,
+          productionType: type,
+          productionId: courseId
         };
         await this.paymentModel.create(newPayment);
       }
@@ -246,24 +248,37 @@ export class PaymentsService {
       responseData: createPaymentLink,
     };
   }
+
   async handleConfirmPayment(info: RequestConfirm) {
     const { data, code, success, desc } = info;
-    const { paymentLinkId } = data;
+    const { paymentLinkId, amount } = data;
     if (data && code === '00' && desc === 'success' && success === true) {
       const paymentData = await this.paymentModel.findOne({
         paymentsLinkId: paymentLinkId,
       });
-      const userId = paymentData?.userId;
+      if (!paymentData) {
+        return null;
+      }
+      const { userId, productionId, productionType } = paymentData
       const userData = await this.userModel.findById(userId);
-      const listCourseBought = (userData as UserClass).courses;
-      // if (!listCourseBought.includes(courseId)) {
-      //   listCourseBought.push(courseId);
-      //   await user?.save();
-      // }
-      // user?.delete;
-      // await this.paymentModel.findOneAndDelete({
-      //   paymentsLinkId: paymentLinkId,
-      // });
+      if (productionType === CommodityType.COURSE) {
+        const listCourseBought = (userData as UserClass).courses;
+        if (!listCourseBought.includes(productionId)) {
+          listCourseBought.push(productionId);
+          await userData?.save();
+          const newHistory = {
+            userId: userId,
+            commodityType: productionType,
+            moneyTraded: amount,
+            commodityId: productionId
+          }
+          await this.historyModel.create(newHistory)
+        }
+      }
+
+      await this.paymentModel.findOneAndDelete({
+        paymentsLinkId: paymentLinkId,
+      });
     }
   }
 }
