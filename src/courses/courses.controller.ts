@@ -33,6 +33,8 @@ export class CoursesController {
   findAllCourseActive(
     @Body() body: { userId: string; courseId?: Array<string> },
   ) {
+    console.log(body);
+
     return this.courseService.getAllCourseActive(body);
   }
   //GET /course/get-name

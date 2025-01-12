@@ -38,10 +38,6 @@ export class UserClass {
   readonly courses: Array<Object>;
 
   @IsOptional()
-  @IsArray()
-  readonly paymentsLinkId: Array<Object>;
-
-  @IsOptional()
   @IsString()
   readonly providers?: string;
   // readonly role?: string;

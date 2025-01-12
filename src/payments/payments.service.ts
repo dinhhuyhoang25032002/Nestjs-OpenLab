@@ -251,6 +251,8 @@ export class PaymentsService {
 
   async handleConfirmPayment(info: RequestConfirm) {
     const { data, code, success, desc } = info;
+    console.log(info);
+    
     const { paymentLinkId, amount } = data;
     if (data && code === '00' && desc === 'success' && success === true) {
       const paymentData = await this.paymentModel.findOne({
